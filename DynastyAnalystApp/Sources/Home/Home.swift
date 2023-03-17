@@ -1,4 +1,7 @@
 import ComposableArchitecture
+import NetworkClient
+import Models
+import RealmSwift
 import SwiftUI
 
 public struct Home: ReducerProtocol {
@@ -12,21 +15,44 @@ public struct Home: ReducerProtocol {
   }
 
   public enum Action: Equatable {
+    case downloadUser(TaskResult<SleeperUser>)
+    case onAppear
     case setUsername(String)
     case signInButtonPressed
   }
+
+  @Dependency(\.networkClient) var networkClient
 
   public init() {}
 
   public var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
+      struct CancelEffect: Hashable {}
+
       switch action {
+
+      case .downloadUser(.success(let user)):
+        print("🔥", user.username)
+        return .cancel(id: CancelEffect())
+
+      case .downloadUser(.failure):
+        return .cancel(id: CancelEffect())
+
+      case .onAppear:
+        Realm.Configuration.defaultConfiguration = .defaultConfiguration
+        return .none
+
+
       case .setUsername(let username):
         state.username = username
         return .none
 
       case .signInButtonPressed:
-        return .none
+        return .task { [state] in
+          await .downloadUser(TaskResult {
+            try await networkClient.getUser(state.username)
+          })
+        }.cancellable(id: CancelEffect())
       }
     }
   }
@@ -49,7 +75,7 @@ public struct HomeView: View {
             TextField("", text: viewStore.binding(
               get: \.username,
               send: Home.Action.setUsername))
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .frame(width: 200, height: 48)
             .textFieldStyle(.roundedBorder)
 
@@ -62,6 +88,7 @@ public struct HomeView: View {
           .frame(maxWidth: .infinity, maxHeight: .infinity)
           .background(.teal)
         }
+      .onAppear { viewStore.send(.onAppear) }
     }
   }
 }

@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:DynastyAnalyst/../DynastyAnalystApp">
+   </FileRef>
+   <FileRef
       location = "group:DynastyAnalyst/DynastyAnalyst.xcodeproj">
    </FileRef>
 </Workspace>

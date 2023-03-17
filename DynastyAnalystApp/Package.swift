@@ -16,6 +16,7 @@ let package = Package(
   products: [
     .library(name: "Helpers", targets: ["Helpers"]),
     .library(name: "Home", targets: ["Home"]),
+    .library(name: "Models", targets: ["Models"]),
     .library(name: "NetworkClient", targets: ["NetworkClient"])
   ],
   dependencies: [
@@ -40,12 +41,22 @@ let package = Package(
     .target(
       name: "Home",
       dependencies: [
+        "Models",
+        "NetworkClient",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+      ]
+    ),
+    .target(
+      name: "Models",
+      dependencies: [
+        .product(name: "RealmSwift", package: "realm-swift")
       ]
     ),
     .target(
       name: "NetworkClient",
       dependencies: [
+        "Helpers",
+        "Models",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
       ]
     )
