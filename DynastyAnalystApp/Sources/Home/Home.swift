@@ -3,6 +3,7 @@ import NetworkClient
 import Models
 import RealmSwift
 import SwiftUI
+import TCAExtensions
 
 public struct Home: ReducerProtocol {
 
@@ -32,8 +33,10 @@ public struct Home: ReducerProtocol {
       switch action {
 
       case .downloadUser(.success(let user)):
-        print("🔥", user.username)
-        return .cancel(id: CancelEffect())
+        return .merge(
+          .save(.add(user)),
+          .cancel(id: CancelEffect())
+        )
 
       case .downloadUser(.failure):
         return .cancel(id: CancelEffect())
