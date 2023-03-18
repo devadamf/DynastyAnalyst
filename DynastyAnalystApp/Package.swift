@@ -18,6 +18,7 @@ let package = Package(
     .library(name: "Home", targets: ["Home"]),
     .library(name: "Models", targets: ["Models"]),
     .library(name: "NetworkClient", targets: ["NetworkClient"]),
+    .library(name: "RealmConfiguration", targets: ["RealmConfiguration"]),
     .library(name: "SwiftUIExtensions", targets: ["SwiftUIExtensions"]),
     .library(name: "TCAExtensions", targets: ["TCAExtensions"])
   ],
@@ -46,6 +47,7 @@ let package = Package(
       dependencies: [
         "Models",
         "NetworkClient",
+        "RealmConfiguration",
         "TCAExtensions",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
       ]
@@ -62,6 +64,13 @@ let package = Package(
         "Helpers",
         "Models",
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+      ]
+    ),
+    .target(
+      name: "RealmConfiguration",
+      dependencies: [
+        "Helpers",
+        .product(name: "RealmSwift", package: "realm-swift")
       ]
     ),
     .target(

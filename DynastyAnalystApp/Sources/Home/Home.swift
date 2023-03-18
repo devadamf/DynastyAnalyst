@@ -1,6 +1,7 @@
 import ComposableArchitecture
 import NetworkClient
 import Models
+import RealmConfiguration
 import RealmSwift
 import SwiftUI
 import TCAExtensions
@@ -34,7 +35,7 @@ public struct Home: ReducerProtocol {
 
       case .downloadUser(.success(let user)):
         return .merge(
-          .save(.add(user)),
+          .save(.create(SleeperUser.self, value: user)),
           .cancel(id: CancelEffect())
         )
 
@@ -42,9 +43,10 @@ public struct Home: ReducerProtocol {
         return .cancel(id: CancelEffect())
 
       case .onAppear:
-        Realm.Configuration.defaultConfiguration = .defaultConfiguration
-        return .none
-
+        Realm.Configuration.defaultConfiguration = Realm.Configuration.dynastyAnalystConfiguration()
+          return .fireAndForget {
+            print("📂", try! Realm().configuration.fileURL!)
+          }
 
       case .setUsername(let username):
         state.username = username
@@ -90,7 +92,7 @@ public struct HomeView: View {
           }
           .frame(maxWidth: .infinity, maxHeight: .infinity)
           .background(.teal)
-        }
+      }
       .onAppear { viewStore.send(.onAppear) }
     }
   }

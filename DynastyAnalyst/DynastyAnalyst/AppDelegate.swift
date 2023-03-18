@@ -3,7 +3,6 @@ import SwiftUI
 
 @main
 struct DynastyAnalystApp: App {
-    let persistenceController = PersistenceController.shared
 
     var body: some Scene {
         WindowGroup {
@@ -11,7 +10,6 @@ struct DynastyAnalystApp: App {
             store: .init(
               initialState: .init(username: ""),
               reducer: Home()))
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }
