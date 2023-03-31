@@ -8,14 +8,24 @@ import Models
 extension NetworkClient {
 
   public static var live: NetworkClient {
-    .init(getUser: _getUser)
+    .init(
+      getLeagues: _getLeagues,
+      getUser: _getUser)
+  }
+
+  private static var _getLeagues: (_ userID: String, _ season: String) async throws -> [League] {
+    { userID, season in
+      let url = URL(string: "https://api.sleeper.app/v1/user/\(userID)/leagues/nfl/\(season)")!
+      let urlRequest = URLRequest(url: url)
+      let data = try await sendRequest(urlRequest)
+      return try JSONDecoder().decode([League].self, from: data)
+    }
   }
 
   private static var _getUser: (_ userID: String) async throws -> SleeperUser {
     { userID in
       let url = URL(string: "https://api.sleeper.app/v1/user/\(userID)")!
       let urlRequest = URLRequest(url: url)
-//      let urlRequest = URLRequest(url: url) |> getRequest
       let data = try await sendRequest(urlRequest)
       return try JSONDecoder().decode(SleeperUser.self, from: data)
     }
